@@ -16,6 +16,8 @@ import { Car } from '@prisma/client';
 import { CalendarSelector } from './CalendarSelector';
 import { addDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
+import axios from 'axios';
+import { toast } from '@/hooks/use-toast';
 
 
 export default function ModalAddReservation(props: ModalAddReservationProps) {
@@ -28,8 +30,18 @@ export default function ModalAddReservation(props: ModalAddReservationProps) {
         to: addDays(new Date(), 5),
     })
     const onReserveCar = async (car: Car, dateSelected: DateRange) => {
-        console.log("reserve car");
-    }
+        const response = await axios.post('/api/checkout', {
+            carId: car.id,
+            priceDay: car.priceDay,
+            startDate: dateSelected.from,
+            endDate: dateSelected.to,
+            carName: car.name
+        })
+        window.location = response.data.url 
+        toast({
+            title: 'Car reserved'
+        });
+    };
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
